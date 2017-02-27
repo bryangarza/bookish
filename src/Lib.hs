@@ -12,6 +12,7 @@ import Control.Lens
 import Data.Traversable
 import Data.Foldable
 import Data.Maybe
+import Data.Monoid
 import Data.Aeson
 import Data.Aeson.Casing
 import Data.Aeson.Types
@@ -55,10 +56,8 @@ data Books = Books [(T.Text, Book)] deriving (Show, Generic)
 
 instance FromJSON Books where
   parseJSON = withObject "books" $
-    return . Books . foldMap (uncurry parseBook) . HM.toList
-    where
-      parseBook :: T.Text -> Value -> [(T.Text, Book)]
-      parseBook isbn = foldMap pure . fmap (isbn,) . fromJSON
+    return . Books . fold . HM.mapWithKey parseBook
+    where parseBook isbn = foldMap pure . fmap (isbn,) . fromJSON
 
 instance ToJSON Book where
   toEncoding = genericToEncoding $ aesonPrefix snakeCase
