@@ -1,6 +1,7 @@
-{-# LANGUAGE RecordWildCards #-}
-{-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE TupleSections     #-}
+{-# LANGUAGE RecordWildCards   #-}
+{-# LANGUAGE DeriveGeneric     #-}
+{-# LANGUAGE DeriveAnyClass    #-}
 {-# LANGUAGE OverloadedStrings #-}
 
 module Lib
@@ -9,6 +10,7 @@ module Lib
 
 import Control.Lens
 import Data.Traversable
+import Data.Foldable
 import Data.Maybe
 import Data.Aeson
 import Data.Aeson.Casing
@@ -34,31 +36,29 @@ data Book = Book {
 } deriving (Generic, Show)
 
 data Author = Author {
-    authorUrl :: T.Text
+    authorUrl  :: T.Text
   , authorName :: T.Text
   } deriving (Generic, Show)
 
 data Subject = Subject {
-    subjectUrl :: T.Text
+    subjectUrl  :: T.Text
   , subjectName :: T.Text
   } deriving (Generic, Show)
 
 data Cover = Cover {
-    coverSmall :: T.Text
+    coverSmall  :: T.Text
   , coverMedium :: T.Text
-  , coverLarge :: T.Text
+  , coverLarge  :: T.Text
   } deriving (Generic, Show)
 
 data Books = Books [(T.Text, Book)] deriving (Show, Generic)
 
 instance FromJSON Books where
-  -- `o` is a HashMap, convert to list of pairs and parse
-  parseJSON = withObject "books" $ \o ->
-    return $ Books $ mapMaybe (\(isbn, bookValue) -> f isbn bookValue) (HM.toList o)
-    where f :: T.Text -> Value -> Maybe (T.Text, Book)
-          f isbn bookValue = case fromJSON bookValue of
-            Error s -> Nothing
-            Success book -> Just (isbn, book)
+  parseJSON = withObject "books" $
+    return . Books . foldMap (uncurry parseBook) . HM.toList
+    where
+      parseBook :: T.Text -> Value -> [(T.Text, Book)]
+      parseBook isbn = foldMap pure . fmap (isbn,) . fromJSON
 
 instance ToJSON Book where
   toEncoding = genericToEncoding $ aesonPrefix snakeCase
