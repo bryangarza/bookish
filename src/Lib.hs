@@ -24,8 +24,8 @@ import Network.Wreq
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
 
-data Book = Book {
-    bookUrl           :: T.Text
+data Book = Book
+  { bookUrl           :: T.Text
   , bookTitle         :: T.Text
   , bookSubtitle      :: Maybe T.Text
   , bookAuthors       :: Maybe [Author]
@@ -34,20 +34,20 @@ data Book = Book {
   , bookCover         :: Maybe Cover
   , bookNumberOfPages :: Maybe Int
   , bookWeight        :: Maybe String
-} deriving (Generic, Show)
+  } deriving (Generic, Show)
 
-data Author = Author {
-    authorUrl  :: T.Text
+data Author = Author
+  { authorUrl  :: T.Text
   , authorName :: T.Text
   } deriving (Generic, Show)
 
-data Subject = Subject {
-    subjectUrl  :: T.Text
+data Subject = Subject
+  { subjectUrl  :: T.Text
   , subjectName :: T.Text
   } deriving (Generic, Show)
 
-data Cover = Cover {
-    coverSmall  :: T.Text
+data Cover = Cover
+  { coverSmall  :: T.Text
   , coverMedium :: T.Text
   , coverLarge  :: T.Text
   } deriving (Generic, Show)
