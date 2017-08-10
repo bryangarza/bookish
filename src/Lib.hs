@@ -5,7 +5,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Lib
-    ( someFunc
+    ( books
     ) where
 
 import Control.Lens
@@ -20,9 +20,6 @@ import qualified Data.Text as T
 import GHC.Generics
 import qualified Data.HashMap.Strict as HM
 import Network.Wreq
-
-someFunc :: IO ()
-someFunc = putStrLn "someFunc"
 
 data Book = Book
   { bookUrl           :: T.Text
@@ -53,6 +50,9 @@ data Cover = Cover
   } deriving (Generic, Show)
 
 data Books = Books [(T.Text, Book)] deriving (Show, Generic)
+
+-- toJSON <$> books "0824824997"
+instance ToJSON Books
 
 instance FromJSON Books where
   parseJSON = withObject "books" $
