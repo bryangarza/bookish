@@ -20,6 +20,9 @@ library
                      , aeson
                      , aeson-casing
                      , lens
+                     , persistent
+                     , persistent-sqlite
+                     , persistent-template
                      , text
                      , unordered-containers
                      , wreq
